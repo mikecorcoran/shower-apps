@@ -3,10 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
 export default defineConfig({
-  plugins: [
-    // @ts-expect-error Vitest's current Vite types lag the plugin release; safe to coerce.
-    react()
-  ],
+  plugins: [react()],
   test: {
     environment: 'jsdom',
     globals: true,

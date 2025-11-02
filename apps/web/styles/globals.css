@@ -18,7 +18,11 @@
 }
 
 body {
-  @apply bg-background text-foreground font-sans antialiased;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {

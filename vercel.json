@@ -1,10 +1,7 @@
 {
   "version": 2,
-  "installCommand": "pnpm install --frozen-lockfile=false",
-  "builds": [
-    {
-      "src": "apps/web/package.json",
-      "use": "@vercel/next"
-    }
-  ]
+  "framework": "nextjs",
+  "installCommand": "corepack enable && pnpm install --frozen-lockfile --prefer-offline=false",
+  "buildCommand": "pnpm build",
+  "env": { "NEXT_TELEMETRY_DISABLED": "1" }
 }
