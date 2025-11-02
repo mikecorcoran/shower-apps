@@ -1,267 +1,295 @@
-# AGENTS.md — Project Operating Guide (Codex / GPT-5-Codex)
+# AGENTS.md — Project Operating Guide (Codex / GPT-5-Codex) — **2025.11 update**
 
 **Purpose**
-This repository hosts a modular, mobile-first website that acts as a hub for small tools and experiments (“shower apps”). Codex uses this file as the project’s ground truth for architecture, quality bars, and contribution workflow.
+Modular, mobile-first hub for small tools (“shower apps”). This file is the repo’s ground truth for architecture, quality bars, versions, and guardrails.
 
 **Model & Environment**
 
-* **Default model:** use **GPT-5-Codex** when available; fall back to **GPT-5**. GPT-5-Codex is optimized for agentic coding with Codex and is available via the Responses API; it’s regularly snapshot-updated. ([platform.openai.com][1])
-* **Codex surfaces:** Codex can run locally (CLI/IDE) and in the cloud; it can read/modify/run code in a targeted directory. ([developers.openai.com][2])
-* **This file’s role:** Codex supports a repo-level **AGENTS.md** convention used to define behaviors, tools, and guardrails. ([developers.openai.com][3])
+* **Default model:** GPT-5-Codex (fallback GPT-5).
+* **Codex surfaces:** local (CLI/IDE) and cloud; may read/modify/run within this repo.
+* **This file’s role:** treat as authoritative “agent spec” for contributors.
 
 ---
 
 ## 1) Project Summary
 
-* **Goal:** a clean, crisp, responsive web hub where each “tool” is a self-contained module with its own page, route, and icon.
-* **Stack:** Next.js (App Router, latest), TypeScript, Tailwind CSS v4, Node 22+, Vite for isolated packages when needed, deployed on Vercel.
-* **Design:** minimal, high-contrast, accessible, fast. No gratuitous motion. Maximize content density without clutter.
-* **Audience:** general users on mobile and desktop.
+* **Goal:** crisp, fast, responsive web hub; each tool is a self-contained module with its own page, route, and icon.
+* **Stack:** **Next.js 16 (App Router)** + **React 19**, TypeScript 5.8, **Tailwind CSS v4**, Node 22 LTS (on Vercel), pnpm 10, Playwright/Vitest, deployed on Vercel. ([Next.js][2])
+* **Design:** minimal, high-contrast, accessible, fast.
 
 ---
 
-## 2) Architecture & Conventions
+## 2) Versions & Engines (pinned)
 
-### 2.1 Directory layout
+**Runtime & package manager**
+
+```json
+// package.json (root)
+{
+  "packageManager": "pnpm@10",
+  "engines": { "node": "22.x" }
+}
+```
+
+* Vercel supports **22.x (default)** and **20.x**. Pin **22.x** unless you have a blocker. ([Vercel][1])
+* Node 18 is deprecated on Vercel; Node 16 is long EOL. ([Vercel][3])
+
+**Framework & libs (recommended ranges)**
+
+```json
+// apps/web/package.json
+{
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "eslint": "^9.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
+```
+
+* **Next.js 16** is current stable (Oct 21, 2025). ([Next.js][2])
+* **React 19** is stable; Next 16 supports React 19. ([react.dev][4])
+* **TypeScript 5.8** is the stable 2025 line; 5.9 is in RC. ([Microsoft for Developers][5])
+* **ESLint 9** is the current major (flat config). ([eslint.org][6])
+* **Tailwind CSS v4** is the current major. ([tailwindcss.com][7])
+
+**Vercel project settings**
+
+* **Project → Settings → Functions / Build**: Node.js **22.x**. (If “Managed by vercel.json” is shown, see §3.) ([Vercel][1])
+* **Root dir** for builds: repo root (monorepo supported), or set `buildCommand`/`installCommand` explicitly.
+* Use **Corepack** (bundled with Node) or `pnpm@10` via `packageManager`. ([pnpm.io][8])
+
+---
+
+## 3) vercel.json (modernize & remove legacy keys)
+
+If you have **"builds"** in `vercel.json`, you’re on a legacy config that **disables** Project UI build settings (your log warning). Replace with framework-detected settings or the minimal runtime config below. ([Vercel][9])
+
+```json
+// vercel.json (recommended)
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1"
+  }
+}
+```
+
+> If you must keep custom routes/functions, keep them—but **remove** the legacy `"builds"` array so Vercel can apply Node 22 and the Next.js integration.
+
+---
+
+## 4) Architecture & Conventions
+
+**Layout**
 
 ```
 /
 ├─ apps/
-│  └─ web/                      # Next.js app (App Router)
-│     ├─ app/                   # routes, layouts, metadata
-│     │  ├─ (marketing)/        # landing + generic pages
-│     │  ├─ tools/              # dynamic tool routes: /tools/[slug]
-│     │  └─ api/                # server actions / edge APIs (minimal)
-│     ├─ components/            # UI primitives (headless where possible)
-│     ├─ lib/                   # shared utils (env, analytics, seo, zod)
-│     ├─ public/                # static assets (favicon, og images)
-│     ├─ styles/                # tailwind.css, tokens.css
-│     └─ tools.manifest.ts      # registry of tools (single source of truth)
+│  └─ web/                      # Next.js app
+│     ├─ app/                   # routes/layouts
+│     │  ├─ (marketing)/
+│     │  ├─ tools/              # /tools/[slug]
+│     │  └─ api/
+│     ├─ components/
+│     ├─ lib/
+│     ├─ public/
+│     ├─ styles/
+│     └─ tools.manifest.ts
 ├─ packages/
-│  ├─ icons/                    # SVG icon factory + templates
-│  └─ ui/                       # optional shared UI (no framework lock-in)
-├─ scripts/                     # codemods, scaffolds, lint hooks
-└─ .github/                     # CI, PR templates
+│  ├─ icons/                    # SVG React icon components
+│  └─ ui/                       # optional shared UI
+└─ scripts/
 ```
 
-### 2.2 Tool module contract
-
-Each tool lives at `apps/web/app/tools/[slug]/` and must export:
-
-* **page**: a server component page (`page.tsx`)
-* **metadata**: a `metadata.ts` exporting Next’s `Metadata`
-* **client**: optional `client.tsx` for interactive UI
-* **schema**: optional `schema.ts` (zod) for inputs/outputs
-* **tests**: Playwright + Vitest as applicable
-* **icon**: an SVG placed via the icons package (`packages/icons/[slug].tsx`)
-* **registry entry**: an object in `tools.manifest.ts` (see §3)
-
-**Routing:** tool is reachable at `/tools/[slug]`. If the tool requires parameters, prefer URLSearchParams over path params unless the path semantics are obvious.
+**Tool contract**
+`apps/web/app/tools/[slug]/` exports `page.tsx`, `metadata.ts`; optional `client.tsx`, `schema.ts` (zod), tests, and an icon in `packages/icons/[slug].tsx`. Registry lives in `apps/web/tools.manifest.ts`; landing & nav render from it.
 
 ---
 
-## 3) Tools Registry (single source of truth)
+## 5) Monorepo Type Safety (fix for the error you hit)
 
-`apps/web/tools.manifest.ts` drives the landing tiles, navigation, sitemap, and OG images.
+Your build error:
+
+```
+Type error: Cannot find module 'react' or its corresponding type declarations
+```
+
+Happens when a **package** (e.g., `packages/icons`) imports React types but doesn’t declare **peer deps / dev deps**.
+
+Fix:
+
+```json
+// packages/icons/package.json
+{
+  "name": "@shower-apps/icons",
+  "version": "0.1.0",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "react": "^18 || ^19"
+  },
+  "devDependencies": {
+    "@types/react": "^18 || ^19",
+    "typescript": "^5.8.0"
+  }
+}
+```
 
 ```ts
-export type ToolEntry = {
-  slug: string;                 // url-safe, kebab-case
-  title: string;                // short label
-  description: string;          // one-liner (<= 120 chars)
-  icon: string;                 // icon id in packages/icons
-  tags?: string[];              // e.g., math, text, images
-  dateAdded: string;            // ISO8601
-  status?: 'alpha'|'beta'|'stable'|'deprecated';
-};
-
-export const TOOLS: ToolEntry[] = [ /* entries */ ];
+// packages/icons/tsconfig.json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["react"]
+  }
+}
 ```
 
-**Invariant:** The landing page and nav render directly from `TOOLS`. Never hard-code tiles elsewhere.
+Then in the **app** package:
+
+```json
+// apps/web/package.json
+{
+  "dependencies": {
+    "@shower-apps/icons": "workspace:*",
+    "react": "^19",
+    "react-dom": "^19"
+  }
+}
+```
+
+Run: `pnpm -w i && pnpm -w build` (or let Vercel run `pnpm install && pnpm build`).
 
 ---
 
-## 4) Code Standards
+## 6) Code Standards
 
-* **TypeScript strict** everywhere.
-* **Tailwind v4** with CSS Variables for design tokens (`:root` scale for color, radius, spacing).
-* **Accessibility:** semantic HTML first; ARIA only when needed; all icons labeled or `aria-hidden`.
-* **State:** prefer server components + ephemeral client state; avoid global stores unless a tool demands it.
-* **Data validation:** zod on input boundaries.
-* **Security:** never trust client input; sanitize; rate-limit APIs; edge runtime only when safe.
-* **No dead code / unused deps.**
-* **Unless requested or stated otherwise by the user**, do not add new pages, forms, or features beyond the specific task.
+* **TypeScript strict**; **ESLint 9 flat config**; format with Prettier or ESLint stylistic. ([eslint.org][6])
+* **Tailwind v4** with CSS variables for tokens. ([tailwindcss.com][7])
+* Accessibility first; ARIA only when necessary.
+* Data validation at edges (zod).
+* **Unless requested or stated otherwise by the user**, do not add pages/forms/features beyond the specific task.
 
 ---
 
-## 5) Visual System
+## 7) Performance, SEO, Analytics
 
-* **Layout grid:** fluid, 4–12 columns depending on breakpoint; content max-widths of 720–1200px.
-* **Spacing scale:** 4px base; consistent rhythm.
-* **Typography:** system fonts or a single well-hinted variable font; avoid FOUT.
-* **Color:** minimal palette with WCAG AA contrast for text.
-* **Motion:** prefers-reduced-motion respected; use springy micro-interactions sparingly.
-* **Icons:** single-color SVG, 1.5–2px stroke, rounded caps/joins, 24px grid. Provide both outline and filled variants when meaningful.
-
----
-
-## 6) Performance, SEO, Analytics
-
-* Image optimization (Next Image); responsive sizes; lazy loading.
-* Preload critical fonts; inline critical CSS where beneficial.
-* Metadata per route (`Metadata` API); canonical URLs; robots; sitemap.
-* OG/Twitter cards generated per tool.
-* Analytics: simple, privacy-respecting pageview + event logging (toggle via env).
+* Next Image; responsive sizes; lazy load.
+* Preload critical fonts; inline critical CSS when it helps.
+* Per-route metadata (Next Metadata API).
+* OG images per tool.
+* Lightweight analytics (env-toggled).
 
 ---
 
-## 7) PWA (optional but supported)
+## 8) PWA (optional)
 
-* Installable manifest; service worker for offline access to tool UIs that don’t require network.
-* Cache static assets aggressively; versioned busting on deploy.
-
----
-
-## 8) Testing & QA
-
-* **Unit:** Vitest (components, utils).
-* **E2E:** Playwright (core user flows: landing → tool → interaction).
-* **Accessibility:** axe checks in CI for key pages.
-* **Definition of Done (per PR):**
-
-  1. Types pass + lints clean
-  2. Tests updated/added + all green
-  3. Lighthouse (mobile) PWA ≥ 90 perf/seo/accessibility on the tool page
-  4. Storybook or MDX doc for complex components (if applicable)
+Manifest + SW for offline tools; cache static aggressively; version bust on deploy.
 
 ---
 
-## 9) CI/CD
+## 9) Testing & QA
 
-* **Vercel**: preview deployments on PRs; production on `main`.
-* **Checks:** typecheck, lint, test, a11y, build.
-* **Release notes:** autogenerated from PR titles/labels.
+* **Unit:** Vitest; **E2E:** Playwright.
+* **A11y:** axe checks in CI.
+* **DoD:** types pass, lints clean, tests green; Lighthouse (mobile) ≥ 90 on new pages.
 
 ---
 
-## 10) Codex Behaviors (Required)
+## 10) CI/CD
 
-When the user asks to **add a new tool**, Codex must:
-
-1. **Plan** the change and show a short plan before edits (files to add/modify, new routes, tests). Use GPT-5-Codex’s planning style; keep it terse. ([cookbook.openai.com][4])
-2. **Scaffold** the tool:
-
-   * Create `apps/web/app/tools/[slug]/page.tsx` (+ `metadata.ts`, optional `client.tsx`, `schema.ts`).
-   * Add icon component in `packages/icons/[slug].tsx` (see §11).
-   * Append entry to `apps/web/tools.manifest.ts`.
-   * Add tests (Vitest + Playwright).
-3. **Wire up** landing tile and nav from the registry only (no duplication).
-4. **Run locally** (CLI/IDE) to build and smoke-test; surface logs and fix obvious issues. ([developers.openai.com][2])
-5. **Produce a PR** with a clean diff, description, screenshots (mobile + desktop), and a 1-minute GIF of the tool in action.
-6. **Do not** introduce unrelated refactors, new dependencies, or design overhauls **unless the user requests or states otherwise**.
-
-When the user asks to **modify an existing tool**, Codex must:
-
-* Read its module and registry entry; list the impacted files; propose migration steps; add/adjust tests accordingly.
-
-When ambiguity exists, ask exactly one focused question, then proceed.
+* **Vercel** previews for PRs; production on `main`.
+* Checks: typecheck, lint, test, a11y, build.
+* Release notes from PR titles/labels.
 
 ---
 
 ## 11) Icon Generation Rules
 
-* Generate a simple **inline SVG React component** in `packages/icons/[slug].tsx`:
-
-  * 24×24 viewBox; currentColor fill/stroke; `aria-hidden="true"` by default.
-  * Geometry: avoid tiny details; prefer recognizable silhouettes.
-  * Export default component named `IconSlug` (PascalCase).
-* Update registry `icon` field to the file’s default export name or mapped id.
+* Each icon is an **inline React SVG component** in `packages/icons/[slug].tsx`, 24×24 viewBox, `currentColor` stroke/fill, `aria-hidden`.
 
 ---
 
 ## 12) Landing Page
 
-* Renders tiles from `TOOLS`: icon, title, short description, status chip.
-* Supports search and tag filtering client-side; keyboard navigation; focus outlines.
-* Tiles are dense on mobile (2-col) and expand to 3–4 columns on larger screens.
-* Empty states are friendly and actionable.
+* Renders tiles from `TOOLS` (no duplication).
+* Search + tag filtering; keyboard nav; focus outlines.
 
 ---
 
-## 13) API & Server Actions (Lightweight)
+## 13) API & Server Actions (lightweight)
 
-* Prefer server actions for simple, bounded operations (rate-limited).
-* For heavier or external calls, add `/app/api/[name]/route.ts` with input validation and error mapping.
-* No long-running jobs in Next API routes; if necessary, stub and leave a note for a future worker.
+Prefer server actions for simple tasks; for heavier work, `/app/api/[name]/route.ts` with validation & rate limiting.
 
 ---
 
-## 14) Configuration & Secrets
+## 14) Config & Secrets
 
-* All secrets via environment variables; never commit keys.
-* Provide `.env.example` with placeholders.
-* Fail fast on missing envs with a typed `env.ts` guard.
+* All secrets via env vars; `.env.example`; fail fast with typed `env.ts`.
 
 ---
 
-## 15) Accessibility & Internationalization
+## 15) Accessibility & i18n
 
-* Landmarks and headings form a valid, linear outline.
-* All interactive elements have visible focus; hit areas ≥ 44×44.
-* Text resizes to 200% without loss of content/func.
-* Strings centralized for future i18n; tools can ship English-only initially.
+Landmarks/headings form a valid outline; focus states visible; 44×44 hit areas; strings centralized for future i18n.
 
 ---
 
-## 16) Local Development
+## 16) Local Dev
 
-* Node 22+, pnpm or npm (consistent lockfile).
-* `pnpm dev` runs the web app; Storybook optional at `pnpm storybook`.
-* Keep repo fast to clone and build; large assets belong in `public/` or remote storage.
+* **Node 22.x**; **pnpm 10**; `pnpm dev`.
+* Keep repo fast to clone/build; large assets in `public/` or remote.
 
 ---
 
 ## 17) Documentation
 
-* Each tool includes a short MDX readme with: purpose, inputs/outputs, edge cases, and examples.
-* The root README documents setup, scripts, and contribution flow.
-* Changelogs via conventional commits or PR labels.
+* Each tool ships an MDX readme (purpose, inputs, outputs, edge cases).
+* Root README covers setup, scripts, and contribution flow.
 
 ---
 
-## 18) Guardrails (Read Carefully)
+## 18) Guardrails (read carefully)
 
-* Follow the smallest change that achieves the user’s request.
-* Maintain visual and architectural consistency with the current system.
-* Never break existing tools or their URLs.
-* **User override:** *Unless requested or stated otherwise by the user*, do not change tokens (colors, spacing, typography), global layouts, or add new dependencies.
-* If a requested addition conflicts with a rule here, **the user’s explicit instruction wins**.
-
----
-
-## 19) Acceptance Checklist (for Codex PRs)
-
-* [ ] New/changed files match the structure in §2 and §3
-* [ ] Typesafe; lints clean; tests added/updated and pass
-* [ ] Mobile first, keyboard usable, contrast AA
-* [ ] Lighthouse (mobile) ≥ 90 on perf/seo/a11y for new page
-* [ ] Registry updated; landing tile and nav appear correctly
-* [ ] Screenshots + short GIF included in PR description
-* [ ] No unrelated changes
+* Do the **smallest coherent change**.
+* Keep style/arch consistency.
+* Never break existing tool URLs.
+* **User override:** *Unless requested or stated otherwise by the user*, don’t change tokens/layouts or add deps.
+* If a user instruction conflicts with a rule, **user instruction wins**.
 
 ---
 
-## 20) Notes on Models (for reference)
+### Footnotes & receipts
 
-* **GPT-5** is the general-purpose coding/reasoning model family; **GPT-5-Codex** is tuned for agentic coding with Codex and recommended when available. ([platform.openai.com][5])
+* Vercel Node versions: **22.x default; 20.x available**. ([Vercel][1])
+* Node 18 deprecation on Vercel (and Node 18 EOL): ([Vercel][3])
+* Node LTS cadence (use LTS for prod): ([GitHub][10])
+* **Next.js 16** release (Oct 21, 2025): ([Next.js][2])
+* **React 19** stable (Dec 2024): ([react.dev][4])
+* **Tailwind v4** release (Jan 2025): ([tailwindcss.com][7])
+* **TypeScript 5.8** (Mar 2025): ([Microsoft for Developers][5])
+* ESLint 9 is current major (flat config): ([eslint.org][6])
 
 ---
 
-**End of AGENTS.md**
-
-[1]: https://platform.openai.com/docs/models/gpt-5-codex?utm_source=chatgpt.com "Model - OpenAI API"
-[2]: https://developers.openai.com/codex/cli/?utm_source=chatgpt.com "Codex CLI"
-[3]: https://developers.openai.com/codex/?utm_source=chatgpt.com "Codex"
-[4]: https://cookbook.openai.com/examples/gpt-5-codex_prompting_guide?utm_source=chatgpt.com "GPT-5-Codex Prompting Guide"
-[5]: https://platform.openai.com/docs/models?utm_source=chatgpt.com "Models - OpenAI API"
+[1]: https://vercel.com/docs/functions/runtimes/node-js/node-js-versions?utm_source=chatgpt.com "Supported Node.js versions"
+[2]: https://nextjs.org/blog/next-16?utm_source=chatgpt.com "Next.js 16"
+[3]: https://vercel.com/changelog/node-js-18-is-being-deprecated?utm_source=chatgpt.com "Node.js 18 is being deprecated on September 1, 2025"
+[4]: https://react.dev/blog/2024/12/05/react-19?utm_source=chatgpt.com "React v19"
+[5]: https://devblogs.microsoft.com/typescript/announcing-typescript-5-8/?utm_source=chatgpt.com "Announcing TypeScript 5.8"
+[6]: https://eslint.org/blog/2024/04/eslint-v9.0.0-released/?utm_source=chatgpt.com "ESLint v9.0.0 released - ESLint - Pluggable JavaScript Linter"
+[7]: https://tailwindcss.com/blog/tailwindcss-v4?utm_source=chatgpt.com "Tailwind CSS v4.0"
+[8]: https://pnpm.io/installation?utm_source=chatgpt.com "Installation | pnpm"
+[9]: https://vercel.com/docs?utm_source=chatgpt.com "Vercel Documentation"
+[10]: https://github.com/nodejs/Release?utm_source=chatgpt.com "Node.js Release Working Group"
