@@ -1,5 +1,9 @@
+export const TOOL_SLUGS = ['archive-explorer'] as const;
+
+export type ToolSlug = (typeof TOOL_SLUGS)[number];
+
 export type ToolEntry = {
-  slug: string;
+  slug: ToolSlug;
   title: string;
   description: string;
   icon: string;
