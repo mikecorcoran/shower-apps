@@ -225,7 +225,7 @@ export default function ArchiveExplorerClient() {
       <section
         {...getRootProps({
           className: cn(
-            'flex cursor-pointer flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-border/60 bg-background/60 px-6 py-16 text-center transition hover:border-primary/60 hover:bg-primary/5',
+            'flex cursor-pointer flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-border/60 bg-surface px-6 py-16 text-center shadow-sm transition hover:border-primary/60 hover:bg-primary/5',
             isDragActive && 'border-primary/80 bg-primary/10'
           )
         })}
@@ -248,20 +248,22 @@ export default function ArchiveExplorerClient() {
       </section>
 
       {hasArchive && (
-        <section className="space-y-4 rounded-3xl border border-border/60 bg-background/40 p-6">
+        <section className="space-y-4 rounded-3xl border border-border/60 bg-surface p-6 shadow-sm">
           <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-wide text-muted">Loaded archive</p>
               <h2 className="text-xl font-semibold text-foreground">{archiveName}</h2>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex gap-2 rounded-full bg-white/5 p-1 text-sm">
+              <div className="flex gap-2 rounded-full bg-background p-1 text-sm shadow-inner">
                 <button
                   type="button"
                   onClick={() => setView('tree')}
                   className={cn(
                     'rounded-full px-3 py-1 transition',
-                    view === 'tree' ? 'bg-primary/20 text-primary' : 'text-muted hover:text-foreground'
+                    view === 'tree'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted hover:bg-accent hover:text-foreground'
                   )}
                 >
                   Hierarchy
@@ -271,7 +273,9 @@ export default function ArchiveExplorerClient() {
                   onClick={() => setView('gallery')}
                   className={cn(
                     'rounded-full px-3 py-1 transition',
-                    view === 'gallery' ? 'bg-primary/20 text-primary' : 'text-muted hover:text-foreground'
+                    view === 'gallery'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted hover:bg-accent hover:text-foreground'
                   )}
                 >
                   Gallery
@@ -355,7 +359,7 @@ function ArchiveTree({
   }
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,22rem)_1fr]">
-      <aside className="rounded-2xl border border-border/40 bg-background/60 p-4">
+      <aside className="rounded-2xl border border-border/40 bg-surface p-4 shadow-sm">
         <h3 className="mb-3 text-sm font-semibold text-muted">Folder hierarchy</h3>
         <ul role="tree" className="space-y-2 text-sm">
           {nodes.map((node) => (
@@ -373,7 +377,7 @@ function ArchiveTree({
           ))}
         </ul>
       </aside>
-      <div className="min-h-[16rem] rounded-2xl border border-border/40 bg-background/60 p-6 text-sm text-muted">
+      <div className="min-h-[16rem] rounded-2xl border border-border/40 bg-surface p-6 text-sm text-muted shadow-sm">
         <p>Select items from the tree to download them individually or as a group.</p>
       </div>
     </div>
@@ -425,7 +429,7 @@ function TreeNode({
           onToggle={(event) => onToggleOpen(node.path, event.currentTarget.open)}
           className="group"
         >
-          <summary className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-foreground hover:bg-white/5">
+          <summary className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-foreground hover:bg-accent">
             <input
               type="checkbox"
               className="h-4 w-4"
@@ -468,7 +472,7 @@ function TreeNode({
   return (
     <li
       role="treeitem"
-      className="flex items-center justify-between rounded-lg px-2 py-2 text-sm text-muted hover:bg-white/5"
+      className="flex items-center justify-between rounded-lg px-2 py-2 text-sm text-muted hover:bg-accent"
       style={{ paddingLeft: `${padding + 12}px` }}
     >
       <label className="flex flex-1 items-center gap-2 text-foreground">
@@ -507,9 +511,9 @@ function ArchiveGallery({ previews, selected, onToggle, onDownload }: ArchiveGal
         return (
           <figure
             key={entry.path}
-            className="group relative overflow-hidden rounded-2xl border border-border/40 bg-background/80"
+            className="group relative overflow-hidden rounded-2xl border border-border/40 bg-surface shadow-sm"
           >
-            <label className="absolute left-3 top-3 z-10 flex items-center gap-2 rounded-full bg-black/40 px-3 py-1 text-xs text-white">
+            <label className="absolute left-3 top-3 z-10 flex items-center gap-2 rounded-full bg-foreground/90 px-3 py-1 text-xs text-background">
               <input
                 type="checkbox"
                 className="h-4 w-4"

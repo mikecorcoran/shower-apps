@@ -31,7 +31,7 @@ export function ToolGrid({ tools }: ToolGridProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Filter by name, description, or tag"
-          className="mt-2 w-full rounded-xl border border-border/60 bg-background/40 px-4 py-3 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="mt-2 w-full rounded-xl border border-border/60 bg-surface px-4 py-3 text-sm text-foreground placeholder:text-muted shadow-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
         />
       </div>
       {filtered.length ? (

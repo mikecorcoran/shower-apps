@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen bg-background text-foreground">
         <SiteHeader />
         <main className="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:pt-16">{children}</main>
-        <footer className="border-t border-border/60 bg-background/70 py-10 text-center text-sm text-muted">
+        <footer className="border-t border-border/60 bg-surface py-10 text-center text-sm text-muted">
           Built with care by Shower Apps.
         </footer>
       </body>
