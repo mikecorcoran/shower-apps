@@ -13,6 +13,7 @@ const config: Config = {
     extend: {
       colors: {
         background: 'var(--color-background)',
+        surface: 'var(--color-surface)',
         foreground: 'var(--color-foreground)',
         muted: 'var(--color-muted)',
         accent: 'var(--color-accent)',

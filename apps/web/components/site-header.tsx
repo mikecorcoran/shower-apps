@@ -4,9 +4,9 @@ import Logo from '@/icons/logo';
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 backdrop-blur bg-background/70">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <Link href="/" className="flex items-center gap-3 text-lg font-semibold">
+        <Link href="/" className="flex items-center gap-3 text-lg font-semibold text-foreground">
           <Logo className="h-7 w-7" />
           Shower Apps
         </Link>
@@ -14,8 +14,8 @@ export function SiteHeader() {
           {TOOLS.map((tool) => (
             <Link
               key={tool.slug}
-              href={{ pathname: '/tools/[slug]', query: { slug: tool.slug } }}
-              className="text-muted hover:text-foreground"
+              href={`/tools/${tool.slug}`}
+              className="text-muted transition-colors hover:text-foreground"
             >
               {tool.title}
             </Link>
