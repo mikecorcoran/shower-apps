@@ -6,11 +6,11 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     typedRoutes: true,
-    serverComponentsExternalPackages: ['@hpcodecraft/7z-wasm']
+    serverComponentsExternalPackages: ['7z-wasm']
   },
   webpack: (config) => {
     config.experiments = { ...config.experiments, asyncWebAssembly: true };
-    config.resolve.fallback = { ...config.resolve.fallback, fs: false, path: false }; // client-only tool
+    config.resolve.fallback = { ...config.resolve.fallback, fs: false, path: false, module: false }; // client-only tool
     return config;
   }
 };

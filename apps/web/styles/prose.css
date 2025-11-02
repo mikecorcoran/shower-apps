@@ -9,5 +9,5 @@
 }
 
 .prose a {
-  @apply text-primary underline underline-offset-4 hover:text-primary/80;
+  @apply text-primary underline underline-offset-4 hover:opacity-80;
 }
