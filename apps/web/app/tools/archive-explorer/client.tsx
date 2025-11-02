@@ -59,6 +59,15 @@ function gatherFilePaths(node: ArchiveTreeNode): string[] {
   return results;
 }
 
+function toBlobPart(view: Uint8Array): ArrayBuffer {
+  const { buffer, byteOffset, byteLength } = view;
+  if (buffer instanceof ArrayBuffer) {
+    return buffer.slice(byteOffset, byteOffset + byteLength);
+  }
+  const copy = view.slice();
+  return copy.buffer;
+}
+
 export default function ArchiveExplorerClient() {
   const [tree, setTree] = useState<ArchiveTreeNode[]>([]);
   const [files, setFiles] = useState<ArchiveFileEntry[]>([]);
@@ -134,7 +143,7 @@ export default function ArchiveExplorerClient() {
   const galleryPreviews = useMemo(() => {
     return imageFiles.map((entry) => {
       if (!entry.data) return { entry, url: undefined };
-      const blob = new Blob([entry.data], { type: entry.mimeType ?? 'application/octet-stream' });
+      const blob = new Blob([toBlobPart(entry.data)], { type: entry.mimeType ?? 'application/octet-stream' });
       return { entry, url: URL.createObjectURL(blob) };
     });
   }, [imageFiles]);
@@ -194,7 +203,7 @@ export default function ArchiveExplorerClient() {
 
   const handleDownloadSingle = useCallback((entry: ArchiveFileEntry) => {
     if (!entry.data) return;
-    const blob = new Blob([entry.data], { type: entry.mimeType ?? 'application/octet-stream' });
+    const blob = new Blob([toBlobPart(entry.data)], { type: entry.mimeType ?? 'application/octet-stream' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
@@ -454,6 +463,8 @@ function TreeNode({
 
   const isChecked = node.entry ? selected.has(node.entry.path) : false;
 
+  const entry = node.entry;
+
   return (
     <li
       role="treeitem"
@@ -465,8 +476,8 @@ function TreeNode({
         <span className="truncate">{node.name}</span>
       </label>
       <span className="ml-3 text-xs text-muted">{formatBytes(node.entry?.size ?? 0)}</span>
-      {node.entry && (
-        <Button type="button" variant="ghost" size="sm" onClick={() => onDownloadFile(node.entry)}>
+      {entry && (
+        <Button type="button" variant="ghost" size="sm" onClick={() => onDownloadFile(entry)}>
           Save
         </Button>
       )}

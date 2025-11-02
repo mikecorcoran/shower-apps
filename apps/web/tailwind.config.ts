@@ -5,9 +5,9 @@ const config: Config = {
   content: [
     './app/**/*.{ts,tsx,mdx}',
     './components/**/*.{ts,tsx}',
-    './styles/**/*.{css}',
+    './styles/**/*.css',
     '../../packages/ui/**/*.{ts,tsx}',
-    '../../packages/icons/**/*.{ts,tsx}'
+    '../../packages/icons/**/*.tsx'
   ],
   theme: {
     extend: {
