@@ -1,17 +1,20 @@
 {
   "name": "@shower-apps/icons",
-  "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
-  "exports": {
-    "./archive-explorer": "./archive-explorer.tsx",
-    "./logo": "./logo.tsx"
-  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "peerDependencies": {
-    "react": "^18.3.1"
+    "react": "^18 || ^19"
   },
   "devDependencies": {
-    "@types/react": "^18.3.26",
-    "react": "^18.3.1"
+    "@types/react": "^18 || ^19",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.8.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist"
   }
 }

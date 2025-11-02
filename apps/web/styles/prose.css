@@ -1,13 +1,24 @@
 .prose {
-  @apply text-sm leading-relaxed text-muted;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.625;
 }
 
 .prose h1,
 .prose h2,
 .prose h3 {
-  @apply text-foreground font-semibold tracking-tight;
+  color: var(--color-foreground);
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
 .prose a {
-  @apply text-primary underline underline-offset-4 hover:opacity-80;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.prose a:hover {
+  opacity: 0.8;
 }
