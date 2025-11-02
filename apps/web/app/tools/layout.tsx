@@ -5,5 +5,5 @@ export const metadata: Metadata = {
 };
 
 export default function ToolsLayout({ children }: { children: React.ReactNode }) {
-  return <div className="space-y-8">{children}</div>;
+  return <div className="space-y-12 sm:space-y-14">{children}</div>;
 }

@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { Badge } from '@/components/badge';
 import ArchiveExplorerClient from './client';
 import { metadata } from './metadata';
 
@@ -6,12 +7,12 @@ export const dynamic = 'force-static';
 
 export default function ArchiveExplorerPage() {
   return (
-    <article className="space-y-10">
-      <header className="space-y-4">
-        <div className="inline-flex items-center rounded-full border border-border/60 px-3 py-1 text-xs uppercase tracking-wide text-muted">
-          File utilities
-        </div>
-        <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">{metadata.title as string}</h1>
+    <article className="space-y-10 sm:space-y-12">
+      <header className="space-y-5 sm:space-y-6">
+        <Badge variant="outline">File utilities</Badge>
+        <h1 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          {metadata.title as string}
+        </h1>
         <p className="max-w-2xl text-base text-muted sm:text-lg">
           Drop an archive to inspect its folder tree, preview images, and download exactly what you need—without leaving the browser.
         </p>
