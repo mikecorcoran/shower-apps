@@ -1,0 +1,23 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Build outputs
+.next
+out
+build
+dist
+coverage
+playwright-report
+test-results
+
+# Editor
+.vscode/
+.idea/
+*.log
+.DS_Store
+
+# Env
+.env
+.env.local
+.env.*.local

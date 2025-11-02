@@ -1,0 +1,32 @@
+---
+title: Archive Explorer
+summary: Inspect compressed archives client-side, browse folder trees, and export exactly the files you need.
+---
+
+## Purpose
+
+Archive Explorer lets you import an archive directly in the browser, inspect its folder structure, preview contained images, and export selected files without uploading anything to a server.
+
+## Supported formats
+
+- `.zip`
+- `.tar`
+- `.gz` (single files)
+- `.tar.gz` / `.tgz`
+- `.7z`
+
+## Workflow
+
+1. Drop an archive or pick one using the file picker.
+2. Switch between the **Hierarchy** flyout to manage folders and the **Gallery** to preview images.
+3. Select files to download individually or use the **Download selection** action to bundle chosen files into a zip.
+
+## Edge cases
+
+- Zero-byte directories are preserved so the hierarchy stays intact.
+- Nested archives are treated as regular files—you can extract them again if needed.
+- Large archives extract entirely client-side; keep an eye on memory usage in low-powered devices.
+
+## Notes
+
+All parsing uses WebAssembly or pure JavaScript inside the browser. No file contents ever leave the page.

@@ -1,0 +1,13 @@
+.prose {
+  @apply text-sm leading-relaxed text-muted;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+  @apply text-foreground font-semibold tracking-tight;
+}
+
+.prose a {
+  @apply text-primary underline underline-offset-4 hover:text-primary/80;
+}

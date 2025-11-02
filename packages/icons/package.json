@@ -1,0 +1,10 @@
+{
+  "name": "@shower-apps/icons",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    "./archive-explorer": "./archive-explorer.tsx",
+    "./logo": "./logo.tsx"
+  }
+}
