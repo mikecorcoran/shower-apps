@@ -13,7 +13,7 @@ export function ToolCard({ tool }: ToolCardProps) {
 
   return (
     <Link
-      href={`/tools/${tool.slug}`}
+      href={{ pathname: '/tools/[slug]', query: { slug: tool.slug } }}
       className={cn(
         'group relative flex flex-col justify-between gap-6 rounded-2xl border border-border/60 bg-white/5 p-6 text-left shadow-sm transition hover:border-primary/60 hover:bg-white/10'
       )}

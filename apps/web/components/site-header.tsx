@@ -12,7 +12,11 @@ export function SiteHeader() {
         </Link>
         <nav className="hidden items-center gap-6 text-sm md:flex">
           {TOOLS.map((tool) => (
-            <Link key={tool.slug} href={`/tools/${tool.slug}`} className="text-muted hover:text-foreground">
+            <Link
+              key={tool.slug}
+              href={{ pathname: '/tools/[slug]', query: { slug: tool.slug } }}
+              className="text-muted hover:text-foreground"
+            >
               {tool.title}
             </Link>
           ))}

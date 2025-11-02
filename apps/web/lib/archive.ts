@@ -174,7 +174,7 @@ function extractTar(buffer: Uint8Array): ArchiveFileEntry[] {
 }
 
 async function extract7z(buffer: Uint8Array): Promise<ArchiveFileEntry[]> {
-  const sevenZipModule = await import('@hpcodecraft/7z-wasm');
+  const sevenZipModule = await import('7z-wasm');
   const initSevenZip =
     (sevenZipModule.default as (() => Promise<any>) | undefined) ??
     (sevenZipModule as unknown as { initSevenZip?: () => Promise<any> }).initSevenZip ??
