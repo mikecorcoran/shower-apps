@@ -9,17 +9,19 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const baseClasses =
-  'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 disabled:opacity-50 disabled:pointer-events-none';
+  'inline-flex items-center justify-center rounded-full border font-medium tracking-tight transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none motion-reduce:hover:translate-y-0';
 
 const variantClasses: Record<NonNullable<ButtonProps['variant']>, string> = {
-  default: 'bg-primary text-primary-foreground hover:bg-primary/80',
-  ghost: 'hover:bg-accent hover:text-foreground',
-  outline: 'border border-border hover:bg-accent'
+  default:
+    'border-primary/20 bg-primary/12 text-primary shadow-sm hover:-translate-y-[1px] hover:bg-primary/16 hover:shadow-md',
+  ghost: 'border-transparent bg-transparent text-muted hover:-translate-y-[1px] hover:text-foreground hover:bg-foreground/5',
+  outline:
+    'border-border/70 bg-surface/90 text-foreground shadow-sm hover:-translate-y-[1px] hover:border-primary/30 hover:bg-primary/10'
 };
 
 const sizeClasses: Record<NonNullable<ButtonProps['size']>, string> = {
-  sm: 'h-9 px-3 text-sm',
-  md: 'h-10 px-4 text-sm',
+  sm: 'h-9 px-4 text-sm',
+  md: 'h-10 px-5 text-sm',
   lg: 'h-11 px-6 text-base'
 };
 

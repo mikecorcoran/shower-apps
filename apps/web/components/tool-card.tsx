@@ -15,17 +15,17 @@ export function ToolCard({ tool }: ToolCardProps) {
     <Link
       href={`/tools/${tool.slug}`}
       className={cn(
-        'group relative flex flex-col justify-between gap-6 rounded-2xl border border-border/60 bg-surface p-6 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-foreground/10 hover:shadow-md'
+        'group relative flex h-full flex-col gap-6 rounded-[1.6rem] border border-border/60 bg-surface/95 p-6 text-left shadow-[0_1px_2px_rgba(15,23,42,0.05)] transition-all duration-200 ease-out hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_35px_-22px_rgba(79,70,229,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0'
       )}
     >
       <div className="flex items-start justify-between">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-primary">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12 text-primary">
           <Icon className="h-6 w-6" />
         </div>
-        {tool.status && <Badge>{tool.status}</Badge>}
+        {tool.status && <Badge variant="outline">{tool.status}</Badge>}
       </div>
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-foreground">{tool.title}</h3>
+      <div className="space-y-3">
+        <h3 className="text-xl font-semibold tracking-tight text-foreground">{tool.title}</h3>
         <p className="text-sm leading-relaxed text-muted">{tool.description}</p>
       </div>
       {tool.tags && (
@@ -33,7 +33,7 @@ export function ToolCard({ tool }: ToolCardProps) {
           {tool.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-border/70 bg-background/40 px-2 py-0.5 text-xs text-muted transition group-hover:border-foreground/10 group-hover:text-foreground"
+              className="rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs font-medium text-muted transition-colors duration-150 group-hover:border-primary/30 group-hover:text-foreground/80"
             >
               {tag}
             </span>

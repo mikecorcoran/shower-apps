@@ -21,9 +21,9 @@ export function ToolGrid({ tools }: ToolGridProps) {
   }, [tools, normalized]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <label className="text-sm font-medium text-muted" htmlFor="tool-search">
+        <label className="text-xs font-semibold uppercase tracking-[0.14em] text-muted" htmlFor="tool-search">
           Search tools
         </label>
         <input
@@ -31,17 +31,17 @@ export function ToolGrid({ tools }: ToolGridProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Filter by name, description, or tag"
-          className="mt-2 w-full rounded-xl border border-border/60 bg-surface px-4 py-3 text-sm text-foreground placeholder:text-muted shadow-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+          className="mt-3 w-full rounded-full border border-border/60 bg-surface/95 px-4 py-3 text-base text-foreground placeholder:text-muted shadow-sm transition-all duration-150 focus:border-primary/40 focus:outline-none focus:ring-4 focus:ring-primary/15 motion-reduce:transition-none"
         />
       </div>
       {filtered.length ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((tool) => (
             <ToolCard key={tool.slug} tool={tool} />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border/60 p-10 text-center text-muted">
+        <div className="rounded-[1.6rem] border border-dashed border-border/60 bg-surface/95 p-12 text-center text-sm text-muted">
           No tools match that filter yet.
         </div>
       )}
